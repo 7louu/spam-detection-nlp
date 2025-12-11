@@ -24,3 +24,10 @@ def lemmatize(tokens):
     lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(token) for token in tokens]
     return tokens
+
+def preprocess_pipeline(text):
+    text = clean_text(text)
+    tokens = tokenize(text)
+    tokens = remove_stopwords(tokens)
+    tokens = lemmatize(tokens)
+    return ' '.join(tokens)
