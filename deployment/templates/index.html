@@ -78,7 +78,7 @@
                         <div class="confidence-section">
                             <p class="confidence-label">Confidence Level</p>
                             <div class="confidence-bar-container">
-                                <div class="confidence-bar" style="width: {{ confidence }}%">
+                                <div class="confidence-bar" data-width="{{ confidence }}">
                                     <span class="confidence-text">{{ confidence }}%</span>
                                 </div>
                             </div>
@@ -157,6 +157,13 @@
             textarea.addEventListener('input', function() {
                 charCount.textContent = this.value.length;
             });
+        }
+
+        // Set confidence bar width
+        const confidenceBar = document.querySelector('.confidence-bar');
+        if (confidenceBar) {
+            const width = confidenceBar.getAttribute('data-width');
+            confidenceBar.style.width = width + '%';
         }
     </script>
 </body>
