@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Spam Detector - AI Powered</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="icon">📱</div>
+                <h1>SMS Spam Detector</h1>
+                <p class="subtitle">Powered by Bidirectional LSTM Neural Network</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Form Section -->
+            <div class="form-section">
+                <h2>Analyze Your Message</h2>
+                <form action="/predict" method="POST" class="prediction-form">
+                    <div class="form-group">
+                        <label for="message">Enter SMS Message:</label>
+                        <textarea 
+                            id="message" 
+                            name="message" 
+                            rows="6" 
+                            placeholder="Type or paste your SMS message here... For example: 'Congratulations! You've won a free prize. Call now!'"
+                            required
+                            maxlength="1000">{{ message if message else '' }}</textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span> / 1000 characters
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <span>🔍</span> Analyze Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- Error Display Section -->
+            {% if error %}
+            <div class="alert alert-error">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Result Display Section -->
+            {% if prediction %}
+            <div class="result-section">
+                <h2>Analysis Result</h2>
+                
+                <div class="result-card {{ 'spam-card' if prediction == 'Spam' else 'ham-card' }}">
+                    <div class="result-header">
+                        <div class="result-icon">
+                            {% if prediction == 'Spam' %}
+                            🚫
+                            {% else %}
+                            ✅
+                            {% endif %}
+                        </div>
+                        <div class="result-label">
+                            <span class="badge {{ 'badge-spam' if prediction == 'Spam' else 'badge-ham' }}">
+                                {{ prediction }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="result-body">
+                        <div class="confidence-section">
+                            <p class="confidence-label">Confidence Level</p>
+                            <div class="confidence-bar-container">
+                                <div class="confidence-bar" style="width: {{ confidence }}%">
+                                    <span class="confidence-text">{{ confidence }}%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="message-display">
+                            <p class="message-label">Your Message:</p>
+                            <div class="message-content">{{ message }}</div>
+                        </div>
+
+                        {% if prediction == 'Spam' %}
+                        <div class="warning-info">
+                            <strong>⚠️ Warning:</strong> This message appears to be spam. Be cautious of:
+                            <ul>
+                                <li>Requests for personal information</li>
+                                <li>Suspicious links or phone numbers</li>
+                                <li>Offers that seem too good to be true</li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <div class="success-info">
+                            <strong>✓ Safe:</strong> This message appears to be legitimate.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button onclick="window.location.href='/'" class="btn-secondary">
+                    🔄 Analyze Another Message
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Information Section -->
+            {% if not prediction and not error %}
+            <div class="info-section">
+                <h3>How It Works</h3>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-icon">🧠</div>
+                        <h4>AI-Powered</h4>
+                        <p>Uses a Bidirectional LSTM neural network trained on 5,572 SMS messages</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">⚡</div>
+                        <h4>Real-Time Analysis</h4>
+                        <p>Get instant results with advanced NLP preprocessing and classification</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">🎯</div>
+                        <h4>High Accuracy</h4>
+                        <p>Achieves over 98% accuracy in detecting spam messages</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2025 SMS Spam Detector | Powered by TensorFlow & Flask</p>
+            <p class="footer-note">Model: BiLSTM with 100-dim embedding | Dataset: 5,572 messages</p>
+        </footer>
+    </div>
+
+    <script>
+        // Character counter
+        const textarea = document.getElementById('message');
+        const charCount = document.getElementById('char-count');
+        
+        if (textarea) {
+            // Update on page load if there's existing content
+            charCount.textContent = textarea.value.length;
+            
+            // Update on input
+            textarea.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+            });
+        }
+    </script>
+</body>
+</html>

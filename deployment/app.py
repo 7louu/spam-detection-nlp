@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request
 import pickle
 import os
-from tensorflow import keras
-from tensorflow.keras.utils import pad_sequences
+import sys
+
+# Add parent directory to path to import from src
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+import tensorflow as tf
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from src.preprocessing import preprocess_pipeline
 
 app = Flask(__name__)
@@ -12,8 +17,15 @@ MODEL_PATH = os.path.join(BASE_DIR,'..', 'models', 'best_spam_detect_model.h5')
 TOKENIZER_PATH = os.path.join(BASE_DIR, '..', 'models', 'tokenizer.pickle')
 
 print("Loading model and tokenizer...")
-model = keras.models.load_model(MODEL_PATH)
-print("Model loaded successfuly!")
+try:
+    model = tf.keras.models.load_model(MODEL_PATH, custom_objects=None, compile=False)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    print("Model loaded successfully!")
+except Exception as e:
+    print(f"Error loading model with compile=False: {e}")
+    # Fallback: try loading without compile parameter
+    model = tf.keras.models.load_model(MODEL_PATH)
+    print("Model loaded successfully with fallback method!")
 
 with open(TOKENIZER_PATH, 'rb') as handle:
     tokenizer = pickle.load(handle)
